@@ -213,6 +213,32 @@
     flex: 1;
     height: 100%;
   }
+  .match-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    flex: 1;
+    justify-content: space-around;
+  }
+  .match-pair::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    width: 20px;
+    height: 1px;
+    background: rgba(243,239,227,0.2);
+  }
+  .match-pair::before {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: 25%;
+    bottom: 25%;
+    width: 1px;
+    background: rgba(243,239,227,0.2);
+  }
 </style>
 </head>
 <body>
@@ -316,9 +342,18 @@
     const cards = document.createElement('div');
     cards.className = 'round-cards';
   
-    matches.forEach(match => {
-      cards.appendChild(buildMatchCard(match, roundName));
-    });
+    for (let i = 0; i < matches.length; i += 2) {
+      const pair = document.createElement('div');
+      pair.className = 'match-pair';
+  
+      pair.appendChild(buildMatchCard(matches[i], roundName));
+  
+      if (matches[i + 1]) {
+        pair.appendChild(buildMatchCard(matches[i + 1], roundName));
+      }
+  
+      cards.appendChild(pair);
+    }
   
     column.appendChild(cards);
     return column;
