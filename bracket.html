@@ -137,53 +137,6 @@
     <a href="index.html">Group Stage</a>
     <a href="bracket.html" class="active">Bracket</a>
   </nav>
-  <header class="hero">
-    <div class="eyebrow">Model predictions · Live bracket</div>
-    <h1>2026 World Cup<br><span>Bracket</span></h1>
-    <p>Real results as they happen, with model predictions for every upcoming match.</p>
-  </header>
-    <main class="wrap">
-    <div class="round-label">Round of 32</div>
-    <div class="bracket-grid" id="bracket-grid"></div>
-  </main>
-  <script>
-  const MATCHES = [
-    { id: 73, team_a: 'Group A Runner-up', team_b: 'Group B Runner-up' },
-    { id: 74, team_a: 'Group E Winner', team_b: 'TBD (3rd place)' },
-    { id: 75, team_a: 'Group F Winner', team_b: 'Group C Runner-up' },
-    { id: 76, team_a: 'Group C Winner', team_b: 'Group F Runner-up' },
-    { id: 77, team_a: 'Group I Winner', team_b: 'TBD (3rd place)' },
-    { id: 78, team_a: 'Group E Runner-up', team_b: 'Group I Runner-up' },
-    { id: 79, team_a: 'Group A Winner', team_b: 'TBD (3rd place)' },
-    { id: 80, team_a: 'Group L Winner', team_b: 'TBD (3rd place)' },
-    { id: 81, team_a: 'Group D Winner', team_b: 'TBD (3rd place)' },
-    { id: 82, team_a: 'Group G Winner', team_b: 'TBD (3rd place)' },
-    { id: 83, team_a: 'Group H Winner', team_b: 'Group J Runner-up' },
-    { id: 84, team_a: 'Group B Winner', team_b: 'TBD (3rd place)' },
-    { id: 85, team_a: 'Group J Winner', team_b: 'Group H Runner-up' },
-    { id: 86, team_a: 'Group K Winner', team_b: 'TBD (3rd place)' },
-    { id: 87, team_a: 'Group D Runner-up', team_b: 'Group G Runner-up' },
-    { id: 88, team_a: 'Group K Runner-up', team_b: 'Group L Runner-up' },
-  ];
-    function buildMatchCard(match) {
-    const card = document.createElement('div');
-    card.className = 'match-card';
-    card.id = `match-${match.id}`;
   
-    card.innerHTML = `
-      <div class="match-number">Match ${match.id}</div>
-      <div class="match-teams">
-        <div class="match-team">${match.team_a}</div>
-        <div class="match-vs">vs</div>
-        <div class="match-team">${match.team_b}</div>
-      </div>
-    `;
-  
-    return card;
-  }
-  
-  const grid = document.getElementById('bracket-grid');
-  MATCHES.forEach(m => grid.appendChild(buildMatchCard(m)));
-  </script>
 </body>
 </html>
