@@ -50,6 +50,36 @@
   }
   .topnav a:hover { color: var(--amber); }
   .topnav a.active { color: var(--amber); border-bottom: 2px solid var(--amber); }
+  .hero {
+    position: relative;
+    padding: 60px 24px 50px;
+    text-align: center;
+    border-bottom: 1px solid rgba(243,239,227,0.08);
+  }
+  .eyebrow {
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(36px, 7vw, 72px);
+    line-height: 0.96;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--amber); }
+  .hero p {
+    max-width: 480px;
+    margin: 0 auto;
+    color: var(--chalk-dim);
+    font-size: 15px;
+    line-height: 1.65;
+  }
 </style>
 </head>
 <body>
