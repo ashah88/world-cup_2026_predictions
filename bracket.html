@@ -354,39 +354,15 @@
     const topRounds = document.getElementById('top-rounds');
     const bottomRounds = document.getElementById('bottom-rounds');
   
-    const topRoundData = [
-      { matches: BRACKET.top.r32, name: 'Round of 32' },
-      { matches: BRACKET.top.r16, name: 'Round of 16' },
-      { matches: BRACKET.top.qf, name: 'Quarter Finals' },
-      { matches: BRACKET.top.sf, name: 'Semi Finals' },
-    ];
+    topRounds.appendChild(buildRoundColumn(BRACKET.top.r32, 'Round of 32'));
+    topRounds.appendChild(buildRoundColumn(BRACKET.top.r16, 'Round of 16'));
+    topRounds.appendChild(buildRoundColumn(BRACKET.top.qf, 'Quarter Finals'));
+    topRounds.appendChild(buildRoundColumn(BRACKET.top.sf, 'Semi Finals'));
   
-    const bottomRoundData = [
-      { matches: BRACKET.bottom.r32, name: 'Round of 32' },
-      { matches: BRACKET.bottom.r16, name: 'Round of 16' },
-      { matches: BRACKET.bottom.qf, name: 'Quarter Finals' },
-      { matches: BRACKET.bottom.sf, name: 'Semi Finals' },
-    ];
-  
-    topRoundData.forEach((round, i) => {
-      topRounds.appendChild(buildRoundColumn(round.matches, round.name));
-      if (i < topRoundData.length - 1) {
-        const connector = document.createElement('div');
-        connector.className = 'connector-col';
-        connector.id = `top-connector-${i}`;
-        topRounds.appendChild(connector);
-      }
-    });
-  
-    bottomRoundData.forEach((round, i) => {
-      bottomRounds.appendChild(buildRoundColumn(round.matches, round.name));
-      if (i < bottomRoundData.length - 1) {
-        const connector = document.createElement('div');
-        connector.className = 'connector-col';
-        connector.id = `bottom-connector-${i}`;
-        bottomRounds.appendChild(connector);
-      }
-    });
+    bottomRounds.appendChild(buildRoundColumn(BRACKET.bottom.r32, 'Round of 32'));
+    bottomRounds.appendChild(buildRoundColumn(BRACKET.bottom.r16, 'Round of 16'));
+    bottomRounds.appendChild(buildRoundColumn(BRACKET.bottom.qf, 'Quarter Finals'));
+    bottomRounds.appendChild(buildRoundColumn(BRACKET.bottom.sf, 'Semi Finals'));
   
     const finalColumn = buildRoundColumn([BRACKET.final], 'Final');
     finalColumn.id = 'final-column';
