@@ -153,6 +153,41 @@
     align-items: stretch;
     overflow-x: auto;
   }
+  .match-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(243,239,227,0.09);
+    border-radius: 6px;
+    padding: 12px 14px;
+    width: 180px;
+    flex-shrink: 0;
+  }
+  .match-number {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--line-white);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .match-team {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 6px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .match-team.tbd {
+    color: var(--line-white);
+    font-style: italic;
+  }
+  .match-divider {
+    height: 1px;
+    background: rgba(243,239,227,0.09);
+    margin: 2px 0;
+  }
 </style>
 </head>
 <body>
@@ -176,5 +211,74 @@
       <div class="bracket-rounds" id="bottom-rounds"></div>
     </div>
 </main>
+  <script>
+  const BRACKET = {
+    top: {
+      r32: [
+        { id: 73, team_a: 'TBD', team_b: 'TBD' },
+        { id: 76, team_a: 'TBD', team_b: 'TBD' },
+        { id: 75, team_a: 'TBD', team_b: 'TBD' },
+        { id: 74, team_a: 'TBD', team_b: 'TBD' },
+        { id: 77, team_a: 'TBD', team_b: 'TBD' },
+        { id: 78, team_a: 'TBD', team_b: 'TBD' },
+        { id: 79, team_a: 'TBD', team_b: 'TBD' },
+        { id: 80, team_a: 'TBD', team_b: 'TBD' },
+      ],
+      r16: [
+        { id: 89, team_a: 'TBD', team_b: 'TBD' },
+        { id: 90, team_a: 'TBD', team_b: 'TBD' },
+        { id: 91, team_a: 'TBD', team_b: 'TBD' },
+        { id: 92, team_a: 'TBD', team_b: 'TBD' },
+      ],
+      qf: [
+        { id: 97, team_a: 'TBD', team_b: 'TBD' },
+        { id: 98, team_a: 'TBD', team_b: 'TBD' },
+      ],
+      sf: [
+        { id: 101, team_a: 'TBD', team_b: 'TBD' },
+      ],
+    },
+    bottom: {
+      r32: [
+        { id: 81, team_a: 'TBD', team_b: 'TBD' },
+        { id: 82, team_a: 'TBD', team_b: 'TBD' },
+        { id: 83, team_a: 'TBD', team_b: 'TBD' },
+        { id: 84, team_a: 'TBD', team_b: 'TBD' },
+        { id: 85, team_a: 'TBD', team_b: 'TBD' },
+        { id: 86, team_a: 'TBD', team_b: 'TBD' },
+        { id: 87, team_a: 'TBD', team_b: 'TBD' },
+        { id: 88, team_a: 'TBD', team_b: 'TBD' },
+      ],
+      r16: [
+        { id: 93, team_a: 'TBD', team_b: 'TBD' },
+        { id: 94, team_a: 'TBD', team_b: 'TBD' },
+        { id: 95, team_a: 'TBD', team_b: 'TBD' },
+        { id: 96, team_a: 'TBD', team_b: 'TBD' },
+      ],
+      qf: [
+        { id: 99, team_a: 'TBD', team_b: 'TBD' },
+        { id: 100, team_a: 'TBD', team_b: 'TBD' },
+      ],
+      sf: [
+        { id: 102, team_a: 'TBD', team_b: 'TBD' },
+      ],
+    },
+    final: { id: 103, team_a: 'TBD', team_b: 'TBD' }
+  };
+  function buildMatchCard(match, roundName) {
+    const card = document.createElement('div');
+    card.className = 'match-card';
+    card.id = `match-${match.id}`;
+  
+    card.innerHTML = `
+      <div class="match-number">${roundName} · M${match.id}</div>
+      <div class="match-team ${match.team_a === 'TBD' ? 'tbd' : ''}">${match.team_a}</div>
+      <div class="match-divider"></div>
+      <div class="match-team ${match.team_b === 'TBD' ? 'tbd' : ''}">${match.team_b}</div>
+    `;
+  
+    return card;
+  }
+  </script>
 </body>
 </html>
