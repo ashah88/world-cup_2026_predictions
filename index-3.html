@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 World Cup — Group Stage Predictions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --turf: #0E2B1F;
+    --turf-deep: #091F16;
+    --turf-line: #1B3F2C;
+    --chalk: #F3EFE3;
+    --chalk-dim: #C9D6CC;
+    --line-white: #9CB8A8;
+    --amber: #E8A33D;
+    --loss-red: #C2604B;
+    --correct: #4CAF7D;
+    --partial: #E8A33D;
+    --wrong: #C2604B;
+    --card-bg: #14331F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--turf-deep);
+    background-image: repeating-linear-gradient(180deg, var(--turf-deep) 0px, var(--turf-deep) 80px, var(--turf) 80px, var(--turf) 160px);
+    color: var(--chalk);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--amber); color: var(--turf-deep); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    padding: 80px 24px 60px;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(243,239,227,0.08);
+  }
+  .hero::before {
+    content: "";
+    position: absolute; top: -50%; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 900px;
+    border-radius: 50%;
+    border: 1px solid rgba(243,239,227,0.05);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-weight: 600; letter-spacing: 0.22em;
+    text-transform: uppercase; font-size: 11px;
+    color: var(--amber); margin-bottom: 16px;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'Oswald', sans-serif; font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(36px, 7vw, 80px);
+    line-height: 0.96; margin-bottom: 16px;
+    position: relative;
+  }
+  .hero h1 span { color: var(--amber); }
+  .hero p {
+    max-width: 520px; margin: 0 auto;
+    color: var(--chalk-dim); font-size: 15px; line-height: 1.65;
+    position: relative;
+  }
+  .hero .meta-row {
+    margin-top: 28px;
+    display: flex; justify-content: center;
+    gap: 24px; flex-wrap: wrap;
+    font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--line-white);
+    position: relative;
+  }
+  .hero .meta-row b { color: var(--chalk); font-weight: 600; }
+
+  /* ACCURACY BANNER */
+  .accuracy-banner {
+    background: rgba(20,51,31,0.9);
+    border-bottom: 1px solid rgba(243,239,227,0.08);
+    padding: 20px 24px;
+  }
+  .accuracy-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  }
+  .accuracy-label {
+    font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--line-white);
+    font-weight: 600; margin-right: 4px;
+  }
+  .acc-stat {
+    background: rgba(243,239,227,0.06);
+    border: 1px solid rgba(243,239,227,0.1);
+    border-radius: 4px;
+    padding: 8px 16px;
+    display: flex; flex-direction: column; align-items: center;
+    min-width: 100px;
+  }
+  .acc-stat .val {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px; font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .acc-stat .lbl {
+    font-size: 9.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--line-white);
+    margin-top: 2px;
+  }
+  .acc-stat.correct .val { color: var(--correct); }
+  .acc-stat.partial .val { color: var(--amber); }
+  .acc-stat.wrong .val { color: var(--loss-red); }
+  .acc-stat.gd .val { color: var(--chalk-dim); }
+  .no-results-msg {
+    color: var(--line-white); font-size: 13px;
+    font-style: italic;
+  }
+
+  /* ADMIN */
+  .admin-bar {
+    background: rgba(9,31,22,0.95);
+    border-bottom: 1px solid rgba(243,239,227,0.06);
+    padding: 10px 20px;
+    display: flex; align-items: center; gap: 12px;
+    justify-content: flex-end;
+  }
+  .admin-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; font-weight: 600;
+    background: transparent;
+    border: 1px solid rgba(243,239,227,0.2);
+    color: var(--chalk-dim);
+    border-radius: 4px; padding: 6px 14px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .admin-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .admin-btn.active { border-color: var(--correct); color: var(--correct); }
+  .admin-status {
+    font-size: 11px; color: var(--line-white);
+  }
+
+  /* PASSWORD MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card-bg);
+    border: 1px solid rgba(243,239,227,0.15);
+    border-radius: 8px;
+    padding: 36px 32px;
+    width: 320px;
+    text-align: center;
+  }
+  .modal h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .modal p { font-size: 13px; color: var(--chalk-dim); margin-bottom: 20px; }
+  .modal input[type="password"] {
+    width: 100%;
+    background: rgba(243,239,227,0.06);
+    border: 1px solid rgba(243,239,227,0.2);
+    border-radius: 4px;
+    color: var(--chalk);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    outline: none;
+  }
+  .modal input[type="password"]:focus { border-color: var(--amber); }
+  .modal-actions { display: flex; gap: 8px; }
+  .modal-actions button {
+    flex: 1; padding: 10px;
+    border-radius: 4px; font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+  }
+  .btn-confirm {
+    background: var(--amber); color: var(--turf-deep);
+  }
+  .btn-cancel {
+    background: rgba(243,239,227,0.08);
+    color: var(--chalk-dim);
+    border: 1px solid rgba(243,239,227,0.15) !important;
+  }
+  .modal-error {
+    font-size: 12px; color: var(--loss-red);
+    margin-top: 8px; min-height: 16px;
+  }
+
+  /* JUMPNAV */
+  .jumpnav {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(9,31,22,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(243,239,227,0.08);
+    padding: 10px 16px;
+    display: flex; gap: 8px; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .jumpnav::-webkit-scrollbar { display: none; }
+  .jumpnav a {
+    flex: 0 0 auto;
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px; font-weight: 600;
+    text-decoration: none; color: var(--chalk-dim);
+    border: 1px solid rgba(243,239,227,0.15);
+    border-radius: 4px; padding: 5px 12px;
+    transition: all 0.15s;
+  }
+  .jumpnav a:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* LAYOUT */
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 48px 20px 100px; }
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 28px;
+  }
+
+  /* GROUP CARD */
+  .group-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(243,239,227,0.09);
+    border-radius: 6px; overflow: hidden;
+    scroll-margin-top: 70px;
+  }
+  .group-card-head {
+    display: flex; align-items: baseline;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(243,239,227,0.09);
+    background: linear-gradient(180deg, rgba(232,163,61,0.06), transparent);
+  }
+  .group-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700; font-size: 20px;
+    text-transform: uppercase; letter-spacing: 0.02em;
+  }
+  .group-label small {
+    font-family: 'Inter', sans-serif; font-weight: 500;
+    font-size: 10px; letter-spacing: 0.12em;
+    color: var(--line-white); display: block;
+    text-transform: uppercase; margin-bottom: 2px;
+  }
+
+  /* STANDINGS */
+  .standings { padding: 12px 20px 16px; }
+  .standings-row {
+    display: grid;
+    grid-template-columns: 20px 1fr 52px;
+    align-items: center; gap: 8px;
+    padding: 6px 0;
+  }
+  .standings-row .pos {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px; color: var(--line-white); font-weight: 500;
+  }
+  .standings-row.qualifies .pos { color: var(--amber); }
+  .standings-row .team-name { font-weight: 600; font-size: 14px; }
+  .standings-row .pct {
+    font-variant-numeric: tabular-nums;
+    font-size: 12px; text-align: right; color: var(--chalk-dim);
+  }
+  .standings-row.qualifies .pct { color: var(--amber); font-weight: 600; }
+  .prob-bar {
+    grid-column: 1 / -1; height: 4px; border-radius: 2px;
+    background: rgba(243,239,227,0.08);
+    overflow: hidden; display: flex; margin-top: 1px;
+  }
+  .seg.s1 { background: var(--amber); }
+  .seg.s2 { background: #B98A39; }
+  .seg.s3 { background: #6E7A65; }
+  .seg.s4 { background: rgba(243,239,227,0.1); }
+  .qualify-divider {
+    border-top: 1px dashed rgba(243,239,227,0.18);
+    margin: 4px 0 6px; position: relative;
+  }
+  .qualify-divider span {
+    position: absolute; top: -8px; right: 0;
+    background: var(--card-bg); padding-left: 6px;
+    font-size: 9px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--line-white);
+  }
+
+  /* FIXTURES */
+  .fixtures {
+    border-top: 1px solid rgba(243,239,227,0.09);
+    padding: 14px 20px 18px;
+  }
+  .fixtures-label {
+    font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--line-white);
+    margin-bottom: 10px; font-weight: 600;
+  }
+  .fixture {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(243,239,227,0.06);
+  }
+  .fixture:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .fixture-main {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 8px;
+  }
+  .fixture-team { font-weight: 500; font-size: 13px; }
+  .fixture-team.right { text-align: right; }
+
+  .fixture-center { text-align: center; }
+  .fixture-score {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600; font-size: 16px;
+    color: var(--amber); font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fixture-xg {
+    font-size: 10px; color: var(--line-white);
+    margin-top: 1px; font-variant-numeric: tabular-nums;
+  }
+
+  .wdl-bar {
+    display: flex; height: 3px; border-radius: 2px;
+    overflow: hidden; margin-top: 7px;
+  }
+  .wdl-bar .seg-a { background: var(--amber); }
+  .wdl-bar .seg-d { background: var(--line-white); opacity: 0.4; }
+  .wdl-bar .seg-b { background: var(--loss-red); opacity: 0.8; }
+  .wdl-labels {
+    display: flex; justify-content: space-between;
+    font-size: 9px; color: var(--line-white);
+    margin-top: 3px; font-variant-numeric: tabular-nums;
+  }
+
+  /* RESULT ENTRY (admin mode) */
+  .result-entry {
+    display: none;
+    margin-top: 10px;
+    background: rgba(243,239,227,0.04);
+    border: 1px solid rgba(243,239,227,0.1);
+    border-radius: 4px;
+    padding: 10px 12px;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .result-entry.visible { display: flex; }
+  .result-entry label {
+    font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--line-white);
+    font-weight: 600; width: 100%;
+  }
+  .score-inputs {
+    display: flex; align-items: center; gap: 8px; flex: 1;
+  }
+  .score-inputs input[type="number"] {
+    width: 48px; text-align: center;
+    background: rgba(243,239,227,0.08);
+    border: 1px solid rgba(243,239,227,0.2);
+    border-radius: 4px; color: var(--chalk);
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px; font-weight: 600;
+    padding: 6px 4px; outline: none;
+  }
+  .score-inputs input[type="number"]:focus { border-color: var(--amber); }
+  .score-inputs span {
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px; color: var(--line-white);
+  }
+  .entry-team-label {
+    font-size: 11px; color: var(--chalk-dim); flex: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .entry-team-label.right { text-align: right; }
+  .save-btn {
+    background: var(--amber); color: var(--turf-deep);
+    border: none; border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 7px 14px; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .save-btn:hover { opacity: 0.85; }
+  .clear-btn {
+    background: transparent;
+    border: 1px solid rgba(243,239,227,0.15);
+    border-radius: 4px; color: var(--line-white);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 7px 10px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .clear-btn:hover { border-color: var(--loss-red); color: var(--loss-red); }
+
+  /* RESULT BADGE */
+  .result-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-top: 8px;
+    border-radius: 3px; padding: 4px 8px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .result-badge.correct { background: rgba(76,175,125,0.15); color: var(--correct); border: 1px solid rgba(76,175,125,0.3); }
+  .result-badge.partial { background: rgba(232,163,61,0.12); color: var(--amber); border: 1px solid rgba(232,163,61,0.3); }
+  .result-badge.wrong { background: rgba(194,96,75,0.12); color: var(--loss-red); border: 1px solid rgba(194,96,75,0.3); }
+  .result-badge .actual-score {
+    font-family: 'Oswald', sans-serif; font-size: 13px;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 48px 20px 64px;
+    color: var(--line-white); font-size: 12px; line-height: 1.8;
+    border-top: 1px solid rgba(243,239,227,0.08);
+  }
+  footer .model-note { max-width: 480px; margin: 0 auto 12px; }
+  footer .sig { font-style: italic; color: var(--chalk-dim); }
+
+  @media (max-width: 480px) {
+    .hero { padding: 56px 16px 40px; }
+    .wrap { padding: 32px 12px 60px; }
+    .groups-grid { grid-template-columns: 1fr; gap: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  a:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="eyebrow">XGBoost · Poisson goal model · 1,000 simulations per fixture</div>
+  <h1>2026 World Cup<br><span>Group Stage</span> Forecast</h1>
+  <p>Every group, every fixture, simulated a thousand times over. Probabilities reflect how often each result occurred across the full run.</p>
+  <div class="meta-row">
+    <span><b>12</b> groups</span>
+    <span><b>72</b> fixtures</span>
+    <span><b>48</b> nations</span>
+    <span><b>1,000</b> simulations</span>
+  </div>
+</header>
+
+<div class="accuracy-banner">
+  <div class="accuracy-inner">
+    <span class="accuracy-label">Model accuracy</span>
+    <div id="acc-stats"></div>
+  </div>
+</div>
+
+<div class="admin-bar">
+  <span class="admin-status" id="admin-status">View mode</span>
+  <button class="admin-btn" id="admin-toggle-btn" onclick="toggleAdmin()">Enter scores</button>
+</div>
+
+<nav class="jumpnav" id="jumpnav"></nav>
+
+<main class="wrap">
+  <div class="groups-grid" id="groups-grid"></div>
+</main>
+
+<footer>
+  <p class="model-note">Forecasts from an XGBoost model trained on 49,000+ international matches since 1872, using Elo ratings, rolling form, and competition-strength weighting. Outcomes sampled from a Poisson goal distribution, simulated 1,000 times per group.</p>
+  <p class="sig">Built pitchside, from the data up.</p>
+</footer>
+
+<!-- Password modal -->
+<div class="modal-overlay" id="pw-modal">
+  <div class="modal">
+    <h3>Admin Access</h3>
+    <p>Enter the password to unlock score entry.</p>
+    <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPassword()">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" onclick="checkPassword()">Unlock</button>
+    </div>
+    <div class="modal-error" id="pw-error"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const DATA = {"matches": [{"group": "A", "team_a": "Mexico", "team_b": "South Korea", "expected_goals_a": 1.39, "expected_goals_b": 1.05, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 44.4, "draw_pct": 27.9, "team_b_win_pct": 27.7}, {"group": "A", "team_a": "Mexico", "team_b": "Czech Republic", "expected_goals_a": 1.75, "expected_goals_b": 0.83, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 59.0, "draw_pct": 23.2, "team_b_win_pct": 17.8}, {"group": "A", "team_a": "Mexico", "team_b": "South Africa", "expected_goals_a": 1.81, "expected_goals_b": 0.76, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 63.0, "draw_pct": 21.7, "team_b_win_pct": 15.3}, {"group": "A", "team_a": "South Korea", "team_b": "Czech Republic", "expected_goals_a": 1.76, "expected_goals_b": 0.83, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 59.3, "draw_pct": 23.9, "team_b_win_pct": 16.8}, {"group": "A", "team_a": "South Korea", "team_b": "South Africa", "expected_goals_a": 1.71, "expected_goals_b": 0.8, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 57.1, "draw_pct": 24.1, "team_b_win_pct": 18.8}, {"group": "A", "team_a": "Czech Republic", "team_b": "South Africa", "expected_goals_a": 1.46, "expected_goals_b": 1.05, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 45.5, "draw_pct": 27.4, "team_b_win_pct": 27.1}, {"group": "B", "team_a": "Canada", "team_b": "Switzerland", "expected_goals_a": 1.14, "expected_goals_b": 1.23, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 33.7, "draw_pct": 27.8, "team_b_win_pct": 38.5}, {"group": "B", "team_a": "Canada", "team_b": "Qatar", "expected_goals_a": 1.54, "expected_goals_b": 0.78, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 55.5, "draw_pct": 25.0, "team_b_win_pct": 19.5}, {"group": "B", "team_a": "Canada", "team_b": "Bosnia and Herzegovina", "expected_goals_a": 1.74, "expected_goals_b": 0.75, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 61.5, "draw_pct": 22.5, "team_b_win_pct": 16.0}, {"group": "B", "team_a": "Switzerland", "team_b": "Qatar", "expected_goals_a": 1.81, "expected_goals_b": 0.69, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 64.4, "draw_pct": 21.9, "team_b_win_pct": 13.7}, {"group": "B", "team_a": "Switzerland", "team_b": "Bosnia and Herzegovina", "expected_goals_a": 2.06, "expected_goals_b": 0.83, "most_likely_score_a": 2, "most_likely_score_b": 1, "team_a_win_pct": 64.7, "draw_pct": 20.7, "team_b_win_pct": 14.6}, {"group": "B", "team_a": "Qatar", "team_b": "Bosnia and Herzegovina", "expected_goals_a": 1.5, "expected_goals_b": 1.1, "most_likely_score_a": 2, "most_likely_score_b": 1, "team_a_win_pct": 47.3, "draw_pct": 24.4, "team_b_win_pct": 28.3}, {"group": "C", "team_a": "Brazil", "team_b": "Morocco", "expected_goals_a": 1.45, "expected_goals_b": 1.2, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 43.0, "draw_pct": 25.6, "team_b_win_pct": 31.4}, {"group": "C", "team_a": "Brazil", "team_b": "Scotland", "expected_goals_a": 2.07, "expected_goals_b": 0.81, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 65.7, "draw_pct": 20.5, "team_b_win_pct": 13.8}, {"group": "C", "team_a": "Brazil", "team_b": "Haiti", "expected_goals_a": 2.36, "expected_goals_b": 0.77, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 73.9, "draw_pct": 16.1, "team_b_win_pct": 10.0}, {"group": "C", "team_a": "Morocco", "team_b": "Scotland", "expected_goals_a": 1.93, "expected_goals_b": 0.82, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 62.2, "draw_pct": 22.0, "team_b_win_pct": 15.8}, {"group": "C", "team_a": "Morocco", "team_b": "Haiti", "expected_goals_a": 2.17, "expected_goals_b": 0.68, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 70.9, "draw_pct": 17.9, "team_b_win_pct": 11.2}, {"group": "C", "team_a": "Scotland", "team_b": "Haiti", "expected_goals_a": 1.57, "expected_goals_b": 0.85, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 54.7, "draw_pct": 24.2, "team_b_win_pct": 21.1}, {"group": "D", "team_a": "United States", "team_b": "Australia", "expected_goals_a": 1.32, "expected_goals_b": 1.31, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 38.5, "draw_pct": 24.3, "team_b_win_pct": 37.2}, {"group": "D", "team_a": "United States", "team_b": "Turkey", "expected_goals_a": 1.55, "expected_goals_b": 1.32, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 42.3, "draw_pct": 24.7, "team_b_win_pct": 33.0}, {"group": "D", "team_a": "United States", "team_b": "Paraguay", "expected_goals_a": 1.59, "expected_goals_b": 1.09, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 49.1, "draw_pct": 24.4, "team_b_win_pct": 26.5}, {"group": "D", "team_a": "Australia", "team_b": "Turkey", "expected_goals_a": 1.36, "expected_goals_b": 1.14, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 42.8, "draw_pct": 24.8, "team_b_win_pct": 32.4}, {"group": "D", "team_a": "Australia", "team_b": "Paraguay", "expected_goals_a": 1.51, "expected_goals_b": 1.01, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 49.8, "draw_pct": 24.7, "team_b_win_pct": 25.5}, {"group": "D", "team_a": "Turkey", "team_b": "Paraguay", "expected_goals_a": 1.47, "expected_goals_b": 1.08, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 44.6, "draw_pct": 26.8, "team_b_win_pct": 28.6}, {"group": "E", "team_a": "Germany", "team_b": "Ivory Coast", "expected_goals_a": 1.83, "expected_goals_b": 0.82, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 60.9, "draw_pct": 22.8, "team_b_win_pct": 16.3}, {"group": "E", "team_a": "Germany", "team_b": "Ecuador", "expected_goals_a": 1.5, "expected_goals_b": 0.94, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 49.3, "draw_pct": 25.7, "team_b_win_pct": 25.0}, {"group": "E", "team_a": "Germany", "team_b": "Cura\u00e7ao", "expected_goals_a": 2.7, "expected_goals_b": 0.61, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 80.7, "draw_pct": 13.1, "team_b_win_pct": 6.2}, {"group": "E", "team_a": "Ivory Coast", "team_b": "Ecuador", "expected_goals_a": 1.07, "expected_goals_b": 1.34, "most_likely_score_a": 0, "most_likely_score_b": 1, "team_a_win_pct": 30.6, "draw_pct": 25.9, "team_b_win_pct": 43.5}, {"group": "E", "team_a": "Ivory Coast", "team_b": "Cura\u00e7ao", "expected_goals_a": 1.95, "expected_goals_b": 0.68, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 66.3, "draw_pct": 22.5, "team_b_win_pct": 11.2}, {"group": "E", "team_a": "Ecuador", "team_b": "Cura\u00e7ao", "expected_goals_a": 2.09, "expected_goals_b": 0.64, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 70.2, "draw_pct": 19.1, "team_b_win_pct": 10.7}, {"group": "F", "team_a": "Netherlands", "team_b": "Japan", "expected_goals_a": 1.35, "expected_goals_b": 1.3, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 38.8, "draw_pct": 25.1, "team_b_win_pct": 36.1}, {"group": "F", "team_a": "Netherlands", "team_b": "Sweden", "expected_goals_a": 2.37, "expected_goals_b": 0.78, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 73.4, "draw_pct": 16.0, "team_b_win_pct": 10.6}, {"group": "F", "team_a": "Netherlands", "team_b": "Tunisia", "expected_goals_a": 1.91, "expected_goals_b": 0.79, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 62.4, "draw_pct": 22.9, "team_b_win_pct": 14.7}, {"group": "F", "team_a": "Japan", "team_b": "Sweden", "expected_goals_a": 2.33, "expected_goals_b": 0.73, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 73.0, "draw_pct": 17.3, "team_b_win_pct": 9.7}, {"group": "F", "team_a": "Japan", "team_b": "Tunisia", "expected_goals_a": 1.81, "expected_goals_b": 0.74, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 65.2, "draw_pct": 19.3, "team_b_win_pct": 15.5}, {"group": "F", "team_a": "Sweden", "team_b": "Tunisia", "expected_goals_a": 1.31, "expected_goals_b": 1.28, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 38.9, "draw_pct": 25.8, "team_b_win_pct": 35.3}, {"group": "G", "team_a": "Belgium", "team_b": "Egypt", "expected_goals_a": 1.5, "expected_goals_b": 1.03, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 48.2, "draw_pct": 26.9, "team_b_win_pct": 24.9}, {"group": "G", "team_a": "Belgium", "team_b": "Iran", "expected_goals_a": 1.25, "expected_goals_b": 1.19, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 39.1, "draw_pct": 24.5, "team_b_win_pct": 36.4}, {"group": "G", "team_a": "Belgium", "team_b": "New Zealand", "expected_goals_a": 1.9, "expected_goals_b": 0.7, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 64.9, "draw_pct": 22.3, "team_b_win_pct": 12.8}, {"group": "G", "team_a": "Egypt", "team_b": "Iran", "expected_goals_a": 1.01, "expected_goals_b": 1.39, "most_likely_score_a": 0, "most_likely_score_b": 1, "team_a_win_pct": 27.0, "draw_pct": 27.8, "team_b_win_pct": 45.2}, {"group": "G", "team_a": "Egypt", "team_b": "New Zealand", "expected_goals_a": 1.49, "expected_goals_b": 0.93, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 50.0, "draw_pct": 27.7, "team_b_win_pct": 22.3}, {"group": "G", "team_a": "Iran", "team_b": "New Zealand", "expected_goals_a": 1.81, "expected_goals_b": 0.75, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 63.3, "draw_pct": 21.3, "team_b_win_pct": 15.4}, {"group": "H", "team_a": "Spain", "team_b": "Uruguay", "expected_goals_a": 1.83, "expected_goals_b": 0.71, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 64.7, "draw_pct": 21.9, "team_b_win_pct": 13.4}, {"group": "H", "team_a": "Spain", "team_b": "Saudi Arabia", "expected_goals_a": 2.43, "expected_goals_b": 0.67, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 76.4, "draw_pct": 15.4, "team_b_win_pct": 8.2}, {"group": "H", "team_a": "Spain", "team_b": "Cape Verde", "expected_goals_a": 2.45, "expected_goals_b": 0.68, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 77.3, "draw_pct": 15.0, "team_b_win_pct": 7.7}, {"group": "H", "team_a": "Uruguay", "team_b": "Saudi Arabia", "expected_goals_a": 1.58, "expected_goals_b": 0.76, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 57.5, "draw_pct": 26.4, "team_b_win_pct": 16.1}, {"group": "H", "team_a": "Uruguay", "team_b": "Cape Verde", "expected_goals_a": 1.74, "expected_goals_b": 0.7, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 61.6, "draw_pct": 23.2, "team_b_win_pct": 15.2}, {"group": "H", "team_a": "Saudi Arabia", "team_b": "Cape Verde", "expected_goals_a": 1.45, "expected_goals_b": 1.05, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 46.8, "draw_pct": 25.5, "team_b_win_pct": 27.7}, {"group": "I", "team_a": "France", "team_b": "Senegal", "expected_goals_a": 1.85, "expected_goals_b": 0.83, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 62.8, "draw_pct": 19.0, "team_b_win_pct": 18.2}, {"group": "I", "team_a": "France", "team_b": "Norway", "expected_goals_a": 2.09, "expected_goals_b": 0.89, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 64.5, "draw_pct": 20.9, "team_b_win_pct": 14.6}, {"group": "I", "team_a": "France", "team_b": "Iraq", "expected_goals_a": 2.26, "expected_goals_b": 0.72, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 72.3, "draw_pct": 17.2, "team_b_win_pct": 10.5}, {"group": "I", "team_a": "Senegal", "team_b": "Norway", "expected_goals_a": 1.41, "expected_goals_b": 1.1, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 44.9, "draw_pct": 26.6, "team_b_win_pct": 28.5}, {"group": "I", "team_a": "Senegal", "team_b": "Iraq", "expected_goals_a": 1.56, "expected_goals_b": 0.85, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 53.3, "draw_pct": 26.2, "team_b_win_pct": 20.5}, {"group": "I", "team_a": "Norway", "team_b": "Iraq", "expected_goals_a": 1.48, "expected_goals_b": 0.98, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 48.3, "draw_pct": 25.6, "team_b_win_pct": 26.1}, {"group": "J", "team_a": "Argentina", "team_b": "Austria", "expected_goals_a": 2.7, "expected_goals_b": 0.75, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 76.3, "draw_pct": 15.3, "team_b_win_pct": 8.4}, {"group": "J", "team_a": "Argentina", "team_b": "Algeria", "expected_goals_a": 2.14, "expected_goals_b": 0.8, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 69.2, "draw_pct": 18.8, "team_b_win_pct": 12.0}, {"group": "J", "team_a": "Argentina", "team_b": "Jordan", "expected_goals_a": 2.4, "expected_goals_b": 0.73, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 75.2, "draw_pct": 16.2, "team_b_win_pct": 8.6}, {"group": "J", "team_a": "Austria", "team_b": "Algeria", "expected_goals_a": 1.23, "expected_goals_b": 1.25, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 35.8, "draw_pct": 29.5, "team_b_win_pct": 34.7}, {"group": "J", "team_a": "Austria", "team_b": "Jordan", "expected_goals_a": 1.43, "expected_goals_b": 1.05, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 47.1, "draw_pct": 24.1, "team_b_win_pct": 28.8}, {"group": "J", "team_a": "Algeria", "team_b": "Jordan", "expected_goals_a": 1.63, "expected_goals_b": 1.01, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 51.5, "draw_pct": 23.8, "team_b_win_pct": 24.7}, {"group": "K", "team_a": "Portugal", "team_b": "DR Congo", "expected_goals_a": 1.95, "expected_goals_b": 0.62, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 68.8, "draw_pct": 19.8, "team_b_win_pct": 11.4}, {"group": "K", "team_a": "Portugal", "team_b": "Uzbekistan", "expected_goals_a": 1.83, "expected_goals_b": 0.89, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 59.3, "draw_pct": 23.1, "team_b_win_pct": 17.6}, {"group": "K", "team_a": "Portugal", "team_b": "Colombia", "expected_goals_a": 1.54, "expected_goals_b": 1.24, "most_likely_score_a": 2, "most_likely_score_b": 1, "team_a_win_pct": 45.3, "draw_pct": 24.3, "team_b_win_pct": 30.4}, {"group": "K", "team_a": "DR Congo", "team_b": "Uzbekistan", "expected_goals_a": 0.97, "expected_goals_b": 1.36, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 25.5, "draw_pct": 30.1, "team_b_win_pct": 44.4}, {"group": "K", "team_a": "DR Congo", "team_b": "Colombia", "expected_goals_a": 0.84, "expected_goals_b": 1.88, "most_likely_score_a": 0, "most_likely_score_b": 2, "team_a_win_pct": 15.4, "draw_pct": 21.5, "team_b_win_pct": 63.1}, {"group": "K", "team_a": "Uzbekistan", "team_b": "Colombia", "expected_goals_a": 1.1, "expected_goals_b": 1.67, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 23.6, "draw_pct": 25.2, "team_b_win_pct": 51.2}, {"group": "L", "team_a": "England", "team_b": "Croatia", "expected_goals_a": 1.75, "expected_goals_b": 0.98, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 55.9, "draw_pct": 22.9, "team_b_win_pct": 21.2}, {"group": "L", "team_a": "England", "team_b": "Ghana", "expected_goals_a": 2.34, "expected_goals_b": 0.59, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 78.3, "draw_pct": 14.8, "team_b_win_pct": 6.9}, {"group": "L", "team_a": "England", "team_b": "Panama", "expected_goals_a": 2.25, "expected_goals_b": 0.8, "most_likely_score_a": 2, "most_likely_score_b": 0, "team_a_win_pct": 71.6, "draw_pct": 16.6, "team_b_win_pct": 11.8}, {"group": "L", "team_a": "Croatia", "team_b": "Ghana", "expected_goals_a": 2.11, "expected_goals_b": 0.66, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 70.6, "draw_pct": 20.1, "team_b_win_pct": 9.3}, {"group": "L", "team_a": "Croatia", "team_b": "Panama", "expected_goals_a": 1.65, "expected_goals_b": 1.13, "most_likely_score_a": 1, "most_likely_score_b": 0, "team_a_win_pct": 51.0, "draw_pct": 22.7, "team_b_win_pct": 26.3}, {"group": "L", "team_a": "Ghana", "team_b": "Panama", "expected_goals_a": 0.94, "expected_goals_b": 1.74, "most_likely_score_a": 1, "most_likely_score_b": 1, "team_a_win_pct": 22.1, "draw_pct": 22.6, "team_b_win_pct": 55.3}], "standings": [{"group": "A", "team": "Mexico", "pct_1st": 50.3, "pct_2nd": 27.8, "pct_3rd": 13.3, "pct_4th": 8.6}, {"group": "A", "team": "South Korea", "pct_1st": 32.7, "pct_2nd": 37.9, "pct_3rd": 20.2, "pct_4th": 9.2}, {"group": "A", "team": "Czech Republic", "pct_1st": 9.9, "pct_2nd": 19.7, "pct_3rd": 34.4, "pct_4th": 36.0}, {"group": "A", "team": "South Africa", "pct_1st": 7.1, "pct_2nd": 14.6, "pct_3rd": 32.1, "pct_4th": 46.2}, {"group": "B", "team": "Switzerland", "pct_1st": 47.1, "pct_2nd": 31.0, "pct_3rd": 16.3, "pct_4th": 5.6}, {"group": "B", "team": "Canada", "pct_1st": 38.1, "pct_2nd": 33.5, "pct_3rd": 19.7, "pct_4th": 8.7}, {"group": "B", "team": "Qatar", "pct_1st": 8.8, "pct_2nd": 21.3, "pct_3rd": 35.5, "pct_4th": 34.4}, {"group": "B", "team": "Bosnia and Herzegovina", "pct_1st": 6.0, "pct_2nd": 14.2, "pct_3rd": 28.5, "pct_4th": 51.3}, {"group": "C", "team": "Brazil", "pct_1st": 53.6, "pct_2nd": 30.9, "pct_3rd": 11.7, "pct_4th": 3.8}, {"group": "C", "team": "Morocco", "pct_1st": 37.2, "pct_2nd": 38.5, "pct_3rd": 20.1, "pct_4th": 4.2}, {"group": "C", "team": "Scotland", "pct_1st": 6.6, "pct_2nd": 22.5, "pct_3rd": 43.1, "pct_4th": 27.8}, {"group": "C", "team": "Haiti", "pct_1st": 2.6, "pct_2nd": 8.1, "pct_3rd": 25.1, "pct_4th": 64.2}, {"group": "D", "team": "United States", "pct_1st": 33.1, "pct_2nd": 28.0, "pct_3rd": 22.5, "pct_4th": 16.4}, {"group": "D", "team": "Australia", "pct_1st": 31.6, "pct_2nd": 25.9, "pct_3rd": 23.7, "pct_4th": 18.8}, {"group": "D", "team": "Turkey", "pct_1st": 21.4, "pct_2nd": 27.8, "pct_3rd": 27.5, "pct_4th": 23.3}, {"group": "D", "team": "Paraguay", "pct_1st": 13.9, "pct_2nd": 18.3, "pct_3rd": 26.3, "pct_4th": 41.5}, {"group": "E", "team": "Germany", "pct_1st": 59.7, "pct_2nd": 25.9, "pct_3rd": 12.3, "pct_4th": 2.1}, {"group": "E", "team": "Ecuador", "pct_1st": 25.5, "pct_2nd": 34.9, "pct_3rd": 31.8, "pct_4th": 7.8}, {"group": "E", "team": "Ivory Coast", "pct_1st": 13.4, "pct_2nd": 33.5, "pct_3rd": 40.6, "pct_4th": 12.5}, {"group": "E", "team": "Cura\u00e7ao", "pct_1st": 1.4, "pct_2nd": 5.7, "pct_3rd": 15.3, "pct_4th": 77.6}, {"group": "F", "team": "Netherlands", "pct_1st": 47.4, "pct_2nd": 34.6, "pct_3rd": 14.6, "pct_4th": 3.4}, {"group": "F", "team": "Japan", "pct_1st": 44.2, "pct_2nd": 36.2, "pct_3rd": 14.5, "pct_4th": 5.1}, {"group": "F", "team": "Tunisia", "pct_1st": 5.3, "pct_2nd": 16.3, "pct_3rd": 35.5, "pct_4th": 42.9}, {"group": "F", "team": "Sweden", "pct_1st": 3.1, "pct_2nd": 12.9, "pct_3rd": 35.4, "pct_4th": 48.6}, {"group": "G", "team": "Belgium", "pct_1st": 41.5, "pct_2nd": 30.6, "pct_3rd": 20.0, "pct_4th": 7.9}, {"group": "G", "team": "Iran", "pct_1st": 36.1, "pct_2nd": 30.4, "pct_3rd": 22.8, "pct_4th": 10.7}, {"group": "G", "team": "Egypt", "pct_1st": 17.9, "pct_2nd": 26.0, "pct_3rd": 33.2, "pct_4th": 22.9}, {"group": "G", "team": "New Zealand", "pct_1st": 4.5, "pct_2nd": 13.0, "pct_3rd": 24.0, "pct_4th": 58.5}, {"group": "H", "team": "Spain", "pct_1st": 77.1, "pct_2nd": 16.7, "pct_3rd": 4.7, "pct_4th": 1.5}, {"group": "H", "team": "Uruguay", "pct_1st": 16.1, "pct_2nd": 51.1, "pct_3rd": 22.6, "pct_4th": 10.2}, {"group": "H", "team": "Saudi Arabia", "pct_1st": 4.3, "pct_2nd": 19.7, "pct_3rd": 40.1, "pct_4th": 35.9}, {"group": "H", "team": "Cape Verde", "pct_1st": 2.5, "pct_2nd": 12.5, "pct_3rd": 32.6, "pct_4th": 52.4}, {"group": "I", "team": "France", "pct_1st": 66.3, "pct_2nd": 21.7, "pct_3rd": 9.1, "pct_4th": 2.9}, {"group": "I", "team": "Senegal", "pct_1st": 18.1, "pct_2nd": 34.5, "pct_3rd": 28.9, "pct_4th": 18.5}, {"group": "I", "team": "Norway", "pct_1st": 11.0, "pct_2nd": 28.0, "pct_3rd": 33.3, "pct_4th": 27.7}, {"group": "I", "team": "Iraq", "pct_1st": 4.6, "pct_2nd": 15.8, "pct_3rd": 28.7, "pct_4th": 50.9}, {"group": "J", "team": "Argentina", "pct_1st": 79.1, "pct_2nd": 14.0, "pct_3rd": 5.7, "pct_4th": 1.2}, {"group": "J", "team": "Algeria", "pct_1st": 10.1, "pct_2nd": 35.0, "pct_3rd": 29.9, "pct_4th": 25.0}, {"group": "J", "team": "Austria", "pct_1st": 7.0, "pct_2nd": 32.1, "pct_3rd": 35.1, "pct_4th": 25.8}, {"group": "J", "team": "Jordan", "pct_1st": 3.8, "pct_2nd": 18.9, "pct_3rd": 29.3, "pct_4th": 48.0}, {"group": "K", "team": "Portugal", "pct_1st": 50.2, "pct_2nd": 31.0, "pct_3rd": 12.5, "pct_4th": 6.3}, {"group": "K", "team": "Colombia", "pct_1st": 34.4, "pct_2nd": 33.2, "pct_3rd": 22.4, "pct_4th": 10.0}, {"group": "K", "team": "Uzbekistan", "pct_1st": 10.6, "pct_2nd": 23.9, "pct_3rd": 34.6, "pct_4th": 30.9}, {"group": "K", "team": "DR Congo", "pct_1st": 4.8, "pct_2nd": 11.9, "pct_3rd": 30.5, "pct_4th": 52.8}, {"group": "L", "team": "England", "pct_1st": 65.8, "pct_2nd": 23.7, "pct_3rd": 8.5, "pct_4th": 2.0}, {"group": "L", "team": "Croatia", "pct_1st": 23.3, "pct_2nd": 43.2, "pct_3rd": 26.5, "pct_4th": 7.0}, {"group": "L", "team": "Panama", "pct_1st": 8.9, "pct_2nd": 25.7, "pct_3rd": 40.6, "pct_4th": 24.8}, {"group": "L", "team": "Ghana", "pct_1st": 2.0, "pct_2nd": 7.4, "pct_3rd": 24.4, "pct_4th": 66.2}]};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const PW_HASH = 'decbee1db0d7ffb02ee8c890622ab21d0fca8882122dfc2c4c92e88912f418cd';
+let isAdmin = false;
+let results = {};
+
+const STORAGE_KEY = 'wc2026_results';
+
+function loadResults() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    results = raw ? JSON.parse(raw) : {};
+  } catch(e) { results = {}; }
+}
+
+function saveResults() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(results)); } catch(e) {}
+}
+
+function matchKey(m) {
+  return `${m.group}_${m.team_a}_${m.team_b}`;
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function toggleAdmin() {
+  if (isAdmin) {
+    isAdmin = false;
+    document.getElementById('admin-toggle-btn').textContent = 'Enter scores';
+    document.getElementById('admin-toggle-btn').classList.remove('active');
+    document.getElementById('admin-status').textContent = 'View mode';
+    document.querySelectorAll('.result-entry').forEach(e => e.classList.remove('visible'));
+  } else {
+    document.getElementById('pw-modal').classList.add('open');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-error').textContent = '';
+    setTimeout(() => document.getElementById('pw-input').focus(), 100);
+  }
+}
+
+async function checkPassword() {
+  const val = document.getElementById('pw-input').value;
+  const hash = await sha256(val);
+  if (hash === PW_HASH) {
+    isAdmin = true;
+    document.getElementById('pw-modal').classList.remove('open');
+    document.getElementById('admin-toggle-btn').textContent = 'Lock';
+    document.getElementById('admin-toggle-btn').classList.add('active');
+    document.getElementById('admin-status').textContent = 'Admin — score entry unlocked';
+    document.querySelectorAll('.result-entry').forEach(e => e.classList.add('visible'));
+  } else {
+    document.getElementById('pw-error').textContent = 'Incorrect password.';
+  }
+}
+
+function closeModal() {
+  document.getElementById('pw-modal').classList.remove('open');
+}
+
+document.getElementById('pw-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ─── ACCURACY ────────────────────────────────────────────────────────────────
+function getOutcome(ga, gb) {
+  return ga > gb ? 'a' : ga < gb ? 'b' : 'd';
+}
+
+function computeAccuracy() {
+  let correct = 0, partial = 0, wrong = 0, totalGD = 0, n = 0;
+  DATA.matches.forEach(m => {
+    const key = matchKey(m);
+    const r = results[key];
+    if (r === undefined) return;
+    n++;
+    const predOutcome = getOutcome(m.most_likely_score_a, m.most_likely_score_b);
+    const realOutcome = getOutcome(r.a, r.b);
+    const exactScore = r.a === m.most_likely_score_a && r.b === m.most_likely_score_b;
+    const predGD = m.most_likely_score_a - m.most_likely_score_b;
+    const realGD = r.a - r.b;
+    totalGD += Math.abs(predGD - realGD);
+    if (exactScore) correct++;
+    else if (predOutcome === realOutcome) partial++;
+    else wrong++;
+  });
+  return { correct, partial, wrong, avgGD: n > 0 ? (totalGD/n).toFixed(2) : '—', n };
+}
+
+function renderAccuracy() {
+  const { correct, partial, wrong, avgGD, n } = computeAccuracy();
+  const container = document.getElementById('acc-stats');
+  if (n === 0) {
+    container.innerHTML = '<span class="no-results-msg">No results entered yet — add real scores to track model accuracy.</span>';
+    return;
+  }
+  container.innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div class="acc-stat correct"><span class="val">${correct}</span><span class="lbl">Exact score</span></div>
+      <div class="acc-stat partial"><span class="val">${partial}</span><span class="lbl">Right winner</span></div>
+      <div class="acc-stat wrong"><span class="val">${wrong}</span><span class="lbl">Wrong winner</span></div>
+      <div class="acc-stat gd"><span class="val">${avgGD}</span><span class="lbl">Avg GD error</span></div>
+      <div class="acc-stat gd"><span class="val">${n}/72</span><span class="lbl">Played</span></div>
+    </div>`;
+}
+
+// ─── BADGE ───────────────────────────────────────────────────────────────────
+function buildBadge(m, r) {
+  const predOutcome = getOutcome(m.most_likely_score_a, m.most_likely_score_b);
+  const realOutcome = getOutcome(r.a, r.b);
+  const exact = r.a === m.most_likely_score_a && r.b === m.most_likely_score_b;
+  let cls, label;
+  if (exact) { cls = 'correct'; label = 'Exact ✓'; }
+  else if (predOutcome === realOutcome) { cls = 'partial'; label = 'Right winner'; }
+  else { cls = 'wrong'; label = 'Wrong winner ✗'; }
+  const badge = document.createElement('div');
+  badge.className = `result-badge ${cls}`;
+  badge.innerHTML = `<span>${label}</span><span class="actual-score">${r.a}–${r.b}</span>`;
+  return badge;
+}
+
+// ─── BUILD CARDS ─────────────────────────────────────────────────────────────
+function el(tag, cls, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+
+function buildGroupCard(groupLetter) {
+  const standings = DATA.standings.filter(s => s.group === groupLetter)
+    .sort((a,b) => b.pct_1st - a.pct_1st);
+  const fixtures = DATA.matches.filter(m => m.group === groupLetter);
+
+  const card = el('div','group-card');
+  card.id = `group-${groupLetter}`;
+
+  // head
+  const head = el('div','group-card-head');
+  head.appendChild(el('div','group-label',`<small>Group</small>${groupLetter}`));
+  card.appendChild(head);
+
+  // standings
+  const sw = el('div','standings');
+  standings.forEach((s,i) => {
+    const row = el('div',`standings-row${i<2?' qualifies':''}`);
+    row.appendChild(el('div','pos',String(i+1)));
+    row.appendChild(el('div','team-name',s.team));
+    row.appendChild(el('div','pct',`${s.pct_1st.toFixed(0)}%`));
+    const bar = el('div','prob-bar');
+    [{cls:'s1',v:s.pct_1st},{cls:'s2',v:s.pct_2nd},{cls:'s3',v:s.pct_3rd},{cls:'s4',v:s.pct_4th}].forEach(({cls,v}) => {
+      const seg = el('div',`seg ${cls}`); seg.style.width=v+'%'; bar.appendChild(seg);
+    });
+    row.appendChild(bar);
+    sw.appendChild(row);
+    if (i===1) { const d=el('div','qualify-divider'); d.innerHTML='<span>Round of 32</span>'; sw.appendChild(d); }
+  });
+  card.appendChild(sw);
+
+  // fixtures
+  const fw = el('div','fixtures');
+  fw.appendChild(el('div','fixtures-label','Predicted fixtures'));
+
+  fixtures.forEach(m => {
+    const key = matchKey(m);
+    const f = el('div','fixture');
+
+    const main = el('div','fixture-main');
+    main.appendChild(el('div','fixture-team',m.team_a));
+    const center = el('div','fixture-center');
+    center.appendChild(el('div','fixture-score',`${m.most_likely_score_a} – ${m.most_likely_score_b}`));
+    center.appendChild(el('div','fixture-xg',`${m.expected_goals_a.toFixed(2)} – ${m.expected_goals_b.toFixed(2)}`));
+    main.appendChild(center);
+    main.appendChild(el('div','fixture-team right',m.team_b));
+    f.appendChild(main);
+
+    const wdl = el('div','wdl-bar');
+    const sa=el('div','seg-a'); sa.style.width=m.team_a_win_pct+'%';
+    const sd=el('div','seg-d'); sd.style.width=m.draw_pct+'%';
+    const sb=el('div','seg-b'); sb.style.width=m.team_b_win_pct+'%';
+    wdl.appendChild(sa); wdl.appendChild(sd); wdl.appendChild(sb);
+    f.appendChild(wdl);
+    const wl=el('div','wdl-labels');
+    wl.innerHTML=`<span>${m.team_a_win_pct.toFixed(0)}%</span><span>${m.draw_pct.toFixed(0)}%</span><span>${m.team_b_win_pct.toFixed(0)}%</span>`;
+    f.appendChild(wl);
+
+    // existing badge
+    const badgeWrap = el('div','badge-wrap-'+key);
+    const existing = results[key];
+    if (existing) badgeWrap.appendChild(buildBadge(m, existing));
+    f.appendChild(badgeWrap);
+
+    // score entry
+    const entry = el('div',`result-entry${isAdmin?' visible':''}`);
+    entry.dataset.key = key;
+    entry.innerHTML = `
+      <label>Enter real score</label>
+      <span class="entry-team-label">${m.team_a}</span>
+      <div class="score-inputs">
+        <input type="number" min="0" max="30" value="${existing?existing.a:''}" placeholder="0" id="inp-a-${key}">
+        <span>–</span>
+        <input type="number" min="0" max="30" value="${existing?existing.b:''}" placeholder="0" id="inp-b-${key}">
+      </div>
+      <span class="entry-team-label right">${m.team_b}</span>
+      <button class="save-btn" onclick="saveResult('${key}')">Save</button>
+      ${existing ? `<button class="clear-btn" onclick="clearResult('${key}')">Clear</button>` : ''}
+    `;
+    f.appendChild(entry);
+    fw.appendChild(f);
+  });
+  card.appendChild(fw);
+  return card;
+}
+
+function saveResult(key) {
+  const a = parseInt(document.getElementById('inp-a-'+key).value);
+  const b = parseInt(document.getElementById('inp-b-'+key).value);
+  if (isNaN(a) || isNaN(b) || a < 0 || b < 0) return;
+  results[key] = { a, b };
+  saveResults();
+  rebuildCard(key);
+  renderAccuracy();
+}
+
+function clearResult(key) {
+  delete results[key];
+  saveResults();
+  rebuildCard(key);
+  renderAccuracy();
+}
+
+function rebuildCard(key) {
+  const groupLetter = key.split('_')[0];
+  const old = document.getElementById(`group-${groupLetter}`);
+  const fresh = buildGroupCard(groupLetter);
+  old.replaceWith(fresh);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadResults();
+renderAccuracy();
+
+const groupLetters = [...new Set(DATA.matches.map(m=>m.group))].sort();
+const grid = document.getElementById('groups-grid');
+const nav = document.getElementById('jumpnav');
+
+groupLetters.forEach(g => {
+  grid.appendChild(buildGroupCard(g));
+  const link = el('a',null,`Group ${g}`);
+  link.href = `#group-${g}`;
+  nav.appendChild(link);
+});
+</script>
+</body>
+</html>
