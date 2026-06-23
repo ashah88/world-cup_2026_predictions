@@ -28,9 +28,35 @@
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
   }
+  .topnav {
+    background: rgba(9,31,22,0.95);
+    border-bottom: 1px solid rgba(243,239,227,0.08);
+    padding: 14px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .topnav a {
+    font-family: 'Oswald', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    color: var(--chalk-dim);
+    padding: 6px 14px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .topnav a:hover { color: var(--amber); }
+  .topnav a.active { color: var(--amber); border-bottom: 2px solid var(--amber); }
 </style>
 </head>
 <body>
+  <nav class="topnav">
+    <a href="index.html">Group Stage</a>
+    <a href="bracket.html" class="active">Bracket</a>
+  </nav>
 
 </body>
 </html>
