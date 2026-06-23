@@ -371,7 +371,64 @@
     setTimeout(drawConnectors, 100);
   }
   function drawConnectors() {
-    // placeholder for now
+    ['top', 'bottom'].forEach(half => {
+      const rounds = document.getElementById(`${half}-rounds`);
+      const columns = rounds.querySelectorAll('.round-column');
+  
+      for (let i = 0; i < columns.length - 1; i++) {
+        const currentPairs = columns[i].querySelectorAll('.match-pair');
+        const nextPairs = columns[i + 1].querySelectorAll('.match-pair');
+  
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.style.position = 'absolute';
+        svg.style.top = '0';
+        svg.style.left = '0';
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.overflow = 'visible';
+        svg.style.pointerEvents = 'none';
+        rounds.style.position = 'relative';
+        rounds.appendChild(svg);
+  
+        currentPairs.forEach((pair, pairIndex) => {
+          const cards = pair.querySelectorAll('.match-card');
+          if (cards.length < 2) return;
+  
+          const nextPair = nextPairs[pairIndex];
+          if (!nextPair) return;
+          const nextCard = nextPair.querySelector('.match-card');
+          if (!nextCard) return;
+  
+          const roundsRect = rounds.getBoundingClientRect();
+  
+          const card1Rect = cards[0].getBoundingClientRect();
+          const card2Rect = cards[1].getBoundingClientRect();
+          const nextCardRect = nextCard.getBoundingClientRect();
+  
+          const x1 = card1Rect.right - roundsRect.left;
+          const y1 = card1Rect.top + card1Rect.height / 2 - roundsRect.top;
+          const x2 = card2Rect.right - roundsRect.left;
+          const y2 = card2Rect.top + card2Rect.height / 2 - roundsRect.top;
+          const x3 = nextCardRect.left - roundsRect.left;
+          const y3 = nextCardRect.top + nextCardRect.height / 2 - roundsRect.top;
+          const midX = (x1 + x3) / 2;
+  
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', `
+            M ${x1} ${y1}
+            H ${midX}
+            V ${y2}
+            H ${x2}
+            M ${midX} ${(y1 + y2) / 2}
+            H ${x3}
+          `);
+          path.setAttribute('stroke', 'rgba(156,184,168,0.35)');
+          path.setAttribute('stroke-width', '1.5');
+          path.setAttribute('fill', 'none');
+          svg.appendChild(path);
+        });
+      }
+    });
   }
 
   renderBracket();
