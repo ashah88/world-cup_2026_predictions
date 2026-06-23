@@ -80,6 +80,25 @@
     font-size: 15px;
     line-height: 1.65;
   }
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 20px 100px;
+  }
+  .round-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--amber);
+    margin-bottom: 24px;
+  }
+  .bracket-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
 </style>
 </head>
 <body>
@@ -92,5 +111,9 @@
     <h1>2026 World Cup<br><span>Bracket</span></h1>
     <p>Real results as they happen, with model predictions for every upcoming match.</p>
   </header>
+    <main class="wrap">
+    <div class="round-label">Round of 32</div>
+    <div class="bracket-grid" id="bracket-grid"></div>
+  </main>
 </body>
 </html>
