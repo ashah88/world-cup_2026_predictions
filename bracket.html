@@ -188,6 +188,29 @@
     background: rgba(243,239,227,0.09);
     margin: 2px 0;
   }
+  .round-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 200px;
+  }
+  .round-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--amber);
+    margin-bottom: 4px;
+    padding-left: 4px;
+  }
+  .round-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: space-around;
+    flex: 1;
+  }
 </style>
 </head>
 <body>
@@ -279,6 +302,48 @@
   
     return card;
   }
+  function buildRoundColumn(matches, roundName) {
+    const column = document.createElement('div');
+    column.className = 'round-column';
+  
+    const label = document.createElement('div');
+    label.className = 'round-label';
+    label.textContent = roundName;
+    column.appendChild(label);
+  
+    const cards = document.createElement('div');
+    cards.className = 'round-cards';
+  
+    matches.forEach(match => {
+      cards.appendChild(buildMatchCard(match, roundName));
+    });
+  
+    column.appendChild(cards);
+    return column;
+  }
+  function renderBracket() {
+    const topRounds = document.getElementById('top-rounds');
+    const bottomRounds = document.getElementById('bottom-rounds');
+  
+    // Top half
+    topRounds.appendChild(buildRoundColumn(BRACKET.top.r32, 'Round of 32'));
+    topRounds.appendChild(buildRoundColumn(BRACKET.top.r16, 'Round of 16'));
+    topRounds.appendChild(buildRoundColumn(BRACKET.top.qf, 'Quarter Finals'));
+    topRounds.appendChild(buildRoundColumn(BRACKET.top.sf, 'Semi Finals'));
+  
+    // Bottom half
+    bottomRounds.appendChild(buildRoundColumn(BRACKET.bottom.r32, 'Round of 32'));
+    bottomRounds.appendChild(buildRoundColumn(BRACKET.bottom.r16, 'Round of 16'));
+    bottomRounds.appendChild(buildRoundColumn(BRACKET.bottom.qf, 'Quarter Finals'));
+    bottomRounds.appendChild(buildRoundColumn(BRACKET.bottom.sf, 'Semi Finals'));
+  
+    // Final
+    const finalColumn = buildRoundColumn([BRACKET.final], 'Final');
+    finalColumn.id = 'final-column';
+    document.querySelector('.wrap').appendChild(finalColumn);
+  }
+  
+  renderBracket();
   </script>
 </body>
 </html>
