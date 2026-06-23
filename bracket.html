@@ -80,11 +80,6 @@
     font-size: 15px;
     line-height: 1.65;
   }
-  .wrap {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 48px 20px 100px;
-  }
   .round-label {
     font-family: 'Oswald', sans-serif;
     font-size: 13px;
@@ -130,6 +125,34 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
+  .wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 20px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+  .bracket-half {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .half-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--amber);
+  }
+  .bracket-rounds {
+    display: flex;
+    flex-direction: row;
+    gap: 0px;
+    align-items: stretch;
+    overflow-x: auto;
+  }
 </style>
 </head>
 <body>
@@ -137,6 +160,21 @@
     <a href="index.html">Group Stage</a>
     <a href="bracket.html" class="active">Bracket</a>
   </nav>
+  <header class="hero">
+    <div class="eyebrow">Model predictions · Live bracket</div>
+    <h1>2026 World Cup<br><span>Bracket</span></h1>
+    <p>Real results as they happen, with model predictions for every upcoming match.</p>
+  </header>
   
+  <main class="wrap">
+    <div class="bracket-half" id="top-half">
+      <div class="half-label">Top Half</div>
+      <div class="bracket-rounds" id="top-rounds"></div>
+    </div>
+    <div class="bracket-half" id="bottom-half">
+      <div class="half-label">Bottom Half</div>
+      <div class="bracket-rounds" id="bottom-rounds"></div>
+    </div>
+</main>
 </body>
 </html>
