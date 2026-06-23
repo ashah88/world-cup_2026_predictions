@@ -134,6 +134,25 @@
     { id: 87, team_a: 'Group D Runner-up', team_b: 'Group G Runner-up' },
     { id: 88, team_a: 'Group K Runner-up', team_b: 'Group L Runner-up' },
   ];
+    function buildMatchCard(match) {
+    const card = document.createElement('div');
+    card.className = 'match-card';
+    card.id = `match-${match.id}`;
+  
+    card.innerHTML = `
+      <div class="match-number">Match ${match.id}</div>
+      <div class="match-teams">
+        <div class="match-team">${match.team_a}</div>
+        <div class="match-vs">vs</div>
+        <div class="match-team">${match.team_b}</div>
+      </div>
+    `;
+  
+    return card;
+  }
+  
+  const grid = document.getElementById('bracket-grid');
+  MATCHES.forEach(m => grid.appendChild(buildMatchCard(m)));
   </script>
 </body>
 </html>
