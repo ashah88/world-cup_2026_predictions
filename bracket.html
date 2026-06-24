@@ -394,38 +394,46 @@
           const cards = pair.querySelectorAll('.match-card');
           if (cards.length < 2) return;
   
-          const nextPair = nextPairs[pairIndex];
-          if (!nextPair) return;
-          const nextCard = nextPair.querySelector('.match-card');
-          if (!nextCard) return;
-  
-          const roundsRect = rounds.getBoundingClientRect();
-  
-          const card1Rect = cards[0].getBoundingClientRect();
-          const card2Rect = cards[1].getBoundingClientRect();
-          const nextCardRect = nextCard.getBoundingClientRect();
-  
-          const x1 = card1Rect.right - roundsRect.left;
-          const y1 = card1Rect.top + card1Rect.height / 2 - roundsRect.top;
-          const x2 = card2Rect.right - roundsRect.left;
-          const y2 = card2Rect.top + card2Rect.height / 2 - roundsRect.top;
-          const x3 = nextCardRect.left - roundsRect.left;
-          const y3 = nextCardRect.top + nextCardRect.height / 2 - roundsRect.top;
-          const midX = (x1 + x3) / 2;
-  
-          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          path.setAttribute('d', `
-            M ${x1} ${y1}
-            H ${midX}
-            V ${y2}
-            H ${x2}
-            M ${midX} ${(y1 + y2) / 2}
-            H ${x3}
-          `);
-          path.setAttribute('stroke', 'rgba(156,184,168,0.35)');
-          path.setAttribute('stroke-width', '1.5');
-          path.setAttribute('fill', 'none');
-          svg.appendChild(path);
+          for (let pairIndex = 0; pairIndex < currentPairs.length; pairIndex += 2) {
+            const pair1 = currentPairs[pairIndex];
+            const pair2 = currentPairs[pairIndex + 1];
+            if (!pair1 || !pair2) continue;
+          
+            const card1 = pair1.querySelector('.match-card');
+            const card2 = pair2.querySelector('.match-card');
+            const nextPair = nextPairs[pairIndex / 2];
+            if (!nextPair) continue;
+            const nextCard = nextPair.querySelector('.match-card');
+            if (!nextCard) continue;
+          
+            const roundsRect = rounds.getBoundingClientRect();
+          
+            const card1Rect = card1.getBoundingClientRect();
+            const card2Rect = card2.getBoundingClientRect();
+            const nextCardRect = nextCard.getBoundingClientRect();
+          
+            const x1 = card1Rect.right - roundsRect.left;
+            const y1 = card1Rect.top + card1Rect.height / 2 - roundsRect.top;
+            const x2 = card2Rect.right - roundsRect.left;
+            const y2 = card2Rect.top + card2Rect.height / 2 - roundsRect.top;
+            const x3 = nextCardRect.left - roundsRect.left;
+            const y3 = nextCardRect.top + nextCardRect.height / 2 - roundsRect.top;
+            const midX = (x1 + x3) / 2;
+          
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', `
+              M ${x1} ${y1}
+              H ${midX}
+              V ${y2}
+              H ${x2}
+              M ${midX} ${(y1 + y2) / 2}
+              H ${x3}
+            `);
+            path.setAttribute('stroke', 'rgba(156,184,168,0.35)');
+            path.setAttribute('stroke-width', '1.5');
+            path.setAttribute('fill', 'none');
+            svg.appendChild(path);
+          }
         });
       }
     });
