@@ -367,56 +367,9 @@
     const finalColumn = buildRoundColumn([BRACKET.final], 'Final');
     finalColumn.id = 'final-column';
     document.querySelector('.wrap').appendChild(finalColumn);
-  
-    setTimeout(drawConnectors, 100);
   }
-  function drawConnectors() {
-    ['top', 'bottom'].forEach(half => {
-      const rounds = document.getElementById(`${half}-rounds`);
-      rounds.style.position = 'relative';
-  
-      const columns = rounds.querySelectorAll('.round-column');
-  
-      for (let i = 0; i < columns.length - 1; i++) {
-        const currentCards = Array.from(columns[i].querySelectorAll('.match-card'));
-        const nextCards = Array.from(columns[i + 1].querySelectorAll('.match-card'));
-  
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;pointer-events:none;';
-        rounds.appendChild(svg);
-  
-        const roundsRect = rounds.getBoundingClientRect();
-  
-        for (let j = 0; j < currentCards.length; j += 2) {
-          const cardA = currentCards[j];
-          const cardB = currentCards[j + 1];
-          const nextCard = nextCards[j / 2];
-  
-          if (!cardA || !cardB || !nextCard) continue;
-  
-          const rectA = cardA.getBoundingClientRect();
-          const rectB = cardB.getBoundingClientRect();
-          const rectN = nextCard.getBoundingClientRect();
-  
-          const x1 = rectA.right - roundsRect.left;
-          const y1 = rectA.top + rectA.height / 2 - roundsRect.top;
-          const x2 = rectB.right - roundsRect.left;
-          const y2 = rectB.top + rectB.height / 2 - roundsRect.top;
-          const xN = rectN.left - roundsRect.left;
-          const yN = rectN.top + rectN.height / 2 - roundsRect.top;
-          const midX = x1 + (xN - x1) / 2;
-          const midY = (y1 + y2) / 2;
-  
-          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          path.setAttribute('d', `M ${x1} ${y1} H ${midX} V ${midY} V ${y2} H ${x2} M ${midX} ${midY} H ${xN}`);
-          path.setAttribute('stroke', 'rgba(156,184,168,0.35)');
-          path.setAttribute('stroke-width', '1.5');
-          path.setAttribute('fill', 'none');
-          svg.appendChild(path);
-        }
-      }
-    });
-  }
+
+  renderBracket();
   </script>
 </body>
 </html>
